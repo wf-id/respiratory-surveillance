@@ -51,16 +51,13 @@ RUN Rscript -e 'devtools::install_github("milesmcbain/datapasta")'
 COPY . /tmp/package/
 RUN Rscript -e "devtools::install_dev_deps('/tmp/package')"
 
-## Install the local version of EpiNow2
-Run R CMD INSTALL  --no-multiarch --with-keep.source /tmp/package/
-
 ## Install rustup and common components
-curl https://sh.rustup.rs -sSf | sh -s -- -y 
-rustup install nightly
-rustup component add rustfmt
-rustup component add rustfmt --toolchain nightly
-rustup component add clippy 
-rustup component add clippy --toolchain nightly
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y 
+RUN rustup install nightly
+RUN rustup component add rustfmt
+RUN rustup component add rustfmt --toolchain nightly
+RUN rustup component add clippy 
+RUN rustup component add clippy --toolchain nightly
 
-cargo install cargo-expand
-cargo install cargo-edit
+RUN cargo install cargo-expand
+RUN cargo install cargo-edit
