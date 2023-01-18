@@ -8,11 +8,8 @@ use std::path::PathBuf;
 use csv::Reader;
 use serde::Deserialize;
 
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "PascalCase")]
 struct Covid {
-    fips_code: String,
+    percent_positive_7_day: f32,
 }
 
 fn main(){
@@ -25,7 +22,11 @@ fn main(){
         download_remote_file(&client, county);
         let file = fs::File::open("81.json").expect("file should open read only");
         let json: serde_json::Value = serde_json::from_reader(file).expect("file should be proper JSON");
-        let first_name = json.get("fips_code").expect("file should have FirstName key");
+        let first_name = json.get("integrated_county_timeseries_external_data").expect("file should have FirstName key");
+        let inner_json = serde_json::from_str(first_name)?;
+        let test = inner_json.get("percent_positive_7_day").expect("Key needed for positive");
+        println!("{}", test)
+
     }
 }
 
