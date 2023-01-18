@@ -33,6 +33,8 @@ quick_json_read <- function(x){
 
 nc_vax <- quick_json_read(tmp)
 
+head(nc_vax)
+
 all_dat <- quick_json_read(tmp2)
 
 all_state <- quick_json_read(tmp3)
