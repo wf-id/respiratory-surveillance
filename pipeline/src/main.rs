@@ -13,14 +13,18 @@ use serde_json::from_reader;
 use serde;
 use serde_json::json;
 use crate::serde::Deserializer;
+use csv;
+use std::error::Error;
+use std::process;
+#[macro_use] extern crate serde_derive;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct L1 {
     pub runid: u32,
     pub integrated_county_timeseries_external_data: Vec<L2>,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct L2 {
     fips_code: i32,
     state: String,
@@ -48,17 +52,20 @@ fn main(){
 
     let counties = vec!["81"];
     for county in &counties{
-        download_remote_file(&client, county);
+        //download_remote_file(&client, county);
         let d = download2(county);
         let cities = d.integrated_county_timeseries_external_data;
-        for k in cities {
-            println!("{:?}",  k.fips_code);
-        }
+        let mut wtr = csv::Writer::from_writer(io::stdout());
+        for k in &cities {
+            //let rec = k.fips_code;
+            //wtr.write_record(&rec);
+            //wtr.flush();
+            println!("{:?}",  k.admissions_covid_confirmed_last_7_days_per_100k_population);
 
+        }
+      
 
     }
-
-    
 
     //let json  = data_file_to_hashmap("81.json");
         //let county_data = json.get("integrated_county_timeseries_external_data").expect("file should have FirstName key");
@@ -97,11 +104,4 @@ fn download2(county: &str) -> L1{
 
 } 
 
-fn deserialize_null_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
-where
-    T: Default + Deserialize<'de>,
-    D: Deserializer<'de>,
-{
-    let opt = Option::deserialize(deserializer)?;
-    Ok(opt.unwrap_or_default())
-}
+
